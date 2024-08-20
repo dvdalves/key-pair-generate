@@ -6,7 +6,7 @@ public class GeradorParChave()
 {
     public (string chavePublica, string chavePrivada) GerarParChaves()
     {
-        using (var rsa = RSA.Create(2048))
+        using (var rsa = RSA.Create(4096))
         {
             string chavePublica = Convert.ToBase64String(rsa.ExportRSAPublicKey());
             string chavePrivada = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
