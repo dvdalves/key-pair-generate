@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
 using GeradorParChaves.Benchmarks;
-using GeradorParChaves.Services;
 
 class Program
 {
