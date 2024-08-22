@@ -1,19 +1,26 @@
 # GeradorParChaves
 
-## Visão Geral
+Fluxo Completo da Criptografia
+Gerar Par de Chaves RSA:
 
-O **GeradorParChaves** é uma aplicação em .NET para gerar pares de chaves RSA, armazenar a chave privada com criptografia AES e associá-la a um fornecedor identificado por um `Guid`.
+O método GeradorParChave.GerarParChaves() gera uma chave pública e uma chave privada usando o algoritmo RSA. A chave pública é usada para criptografar dados, enquanto a chave privada é usada para descriptografá-los.
+Armazenar e Buscar Par de Chaves:
 
-## Funcionalidades
+A chave privada é criptografada usando AES e armazenada no arquivo chavePrivada.bson via Armazenamento.ArmazenarChavePrivada().
+A chave privada pode ser recuperada e descriptografada via Armazenamento.BuscarChavePrivada().
+Gerar Segredo:
 
-- Geração de pares de chaves RSA.
-- Criptografia e armazenamento seguro da chave privada em BSON.
-- Associação da chave privada a um `Guid` de fornecedor.
-- Auditoria da geração de chaves.
+O segredo (uma chave simétrica) é gerado usando o método GeradorSegredo.GerarSegredo(). Esse segredo é usado para criptografar objetos e arquivos.
+Armazenar e Buscar Segredo:
 
-## Estrutura do Projeto
+O segredo é criptografado com AES e armazenado no arquivo segredo.bson via Armazenamento.ArmazenarSegredo().
+O segredo pode ser recuperado e descriptografado via Armazenamento.BuscarSegredo().
+Criptografar e Descriptografar Segredo:
 
-- `Program.cs`: Ponto de entrada da aplicação.
-- `Services/ArmazenamentoChave.cs`: Criptografa e armazena a chave privada.
-- `Services/GeradorParChave.cs`: Gera o par de chaves RSA.
-- `Services/ServicoAuditoria.cs`: Registra auditoria da geração de chaves.
+O segredo pode ser criptografado com a chave pública RSA usando GeradorSegredo.CriptografarSegredo() e descriptografado com a chave privada RSA usando GeradorSegredo.DescriptografarSegredo().
+Criptografar e Descriptografar Objetos:
+
+Objetos (dados binários) são criptografados usando o segredo descriptografado com AES via GeradorSegredo.CriptografarObjeto() e podem ser descriptografados usando GeradorSegredo.DescriptografarObjeto().
+Criptografar e Descriptografar Arquivos:
+
+Arquivos são criptografados e descriptografados da mesma maneira que objetos, utilizando GeradorSegredo.CriptografarArquivo() e GeradorSegredo.DescriptografarArquivo().
