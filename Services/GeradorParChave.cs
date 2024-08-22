@@ -2,7 +2,7 @@
 
 namespace GeradorParChaves.Services;
 
-public class GeradorParChave()
+public class GeradorParChave
 {
     public (string chavePublica, string chavePrivada) GerarParChaves()
     {
