@@ -1,53 +1,38 @@
-﻿using GeradorParChaves.Services;
+﻿using KeyPairGenerator.Services;
 using System.Text;
 
-class Program
+internal class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
-        var geradorParChaves = new GeradorParChave();
+        var (publicKey, privateKey) = KeyPairGeneratorService.GenerateKeyPair();
 
-        // Gerar par de chaves RSA
-        var (chavePublica, chavePrivada) = geradorParChaves.GerarParChaves();
+        Guid entityId = Guid.NewGuid();
+        SecureStorage.StorePrivateKey(privateKey, entityId);
 
-        // Simular o ID de um fornecedor
-        Guid fornecedorId = Guid.NewGuid();
+        Console.WriteLine("Generated public key: " + publicKey);
 
-        // Armazenar a chave privada no armazenamento seguro
-        Armazenamento.ArmazenarChavePrivada(chavePrivada, fornecedorId);
+        var (retrievedEntityId, retrievedPrivateKey) = SecureStorage.RetrievePrivateKey(entityId);
+        Console.WriteLine($"Entity: {retrievedEntityId}, Retrieved private key: {retrievedPrivateKey}");
 
-        Console.WriteLine("Chave pública gerada: " + chavePublica);
+        var secret = SecretGenerator.GenerateSecret();
+        SecureStorage.StoreSecret(secret, entityId);
+        Console.WriteLine("Secret generated and stored.");
 
-        // Recuperar a chave privada para uso posterior
-        var (fornecedorIdRecuperado, chavePrivadaRecuperada) = Armazenamento.BuscarChavePrivada(fornecedorId);
-        Console.WriteLine($"Fornecedor: {fornecedorIdRecuperado}, Chave privada recuperada: {chavePrivadaRecuperada}");
+        var (retrievedSecretEntityId, retrievedSecret) = SecureStorage.RetrieveSecret(entityId);
+        Console.WriteLine("Retrieved secret: " + Convert.ToBase64String(retrievedSecret));
 
-        // Gerar um segredo (chave simétrica)
-        var segredo = GeradorSegredo.GerarSegredo();
+        var encryptedSecret = SecretGenerator.EncryptSecret(retrievedSecret, publicKey);
+        Console.WriteLine("Encrypted secret: " + Convert.ToBase64String(encryptedSecret));
 
-        // Armazenar o segredo
-        Armazenamento.ArmazenarSegredo(segredo, fornecedorId);
-        Console.WriteLine("Segredo gerado e armazenado.");
+        var decryptedSecret = SecretGenerator.DecryptSecret(encryptedSecret, retrievedPrivateKey);
+        Console.WriteLine("Decrypted secret: " + Convert.ToBase64String(decryptedSecret));
 
-        // Recuperar o segredo para uso posterior
-        var (fornecedorIdSegredoRecuperado, segredoRecuperado) = Armazenamento.BuscarSegredo(fornecedorId);
-        Console.WriteLine("Segredo recuperado: " + Convert.ToBase64String(segredoRecuperado));
+        byte[] data = Encoding.UTF8.GetBytes("Sensitive data");
+        byte[] encryptedData = SecretGenerator.EncryptObject(data, decryptedSecret);
+        Console.WriteLine("Encrypted data: " + Convert.ToBase64String(encryptedData));
 
-        // Criptografar o segredo com a chave pública RSA
-        var segredoCriptografado = GeradorSegredo.CriptografarSegredo(segredoRecuperado, chavePublica);
-        Console.WriteLine("Segredo criptografado: " + Convert.ToBase64String(segredoCriptografado));
-
-        // Descriptografar o segredo com a chave privada RSA
-        var segredoDescriptografado = GeradorSegredo.DescriptografarSegredo(segredoCriptografado, chavePrivadaRecuperada);
-        Console.WriteLine("Segredo descriptografado: " + Convert.ToBase64String(segredoDescriptografado));
-
-        // Exemplo de uso do segredo descriptografado para criptografar um objeto (dados)
-        byte[] dados = Encoding.UTF8.GetBytes("Dados sensíveis");
-        byte[] dadosCriptografados = GeradorSegredo.CriptografarObjeto(dados, segredoDescriptografado);
-        Console.WriteLine("Dados criptografados: " + Convert.ToBase64String(dadosCriptografados));
-
-        // Descriptografar os dados
-        byte[] dadosDescriptografados = GeradorSegredo.DescriptografarObjeto(dadosCriptografados, segredoDescriptografado);
-        Console.WriteLine("Dados descriptografados: " + Encoding.UTF8.GetString(dadosDescriptografados));
+        byte[] decryptedData = SecretGenerator.DecryptObject(encryptedData, decryptedSecret);
+        Console.WriteLine("Decrypted data: " + Encoding.UTF8.GetString(decryptedData));
     }
 }

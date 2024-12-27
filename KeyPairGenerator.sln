@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeradorParChaves", "GeradorParChaves.csproj", "{E69A58A4-A7D0-47AC-AFD4-7C4328D7B31C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyPairGenerator", "KeyPairGenerator.csproj", "{E69A58A4-A7D0-47AC-AFD4-7C4328D7B31C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
